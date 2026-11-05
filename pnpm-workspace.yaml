@@ -1,0 +1,3 @@
+# tsx 使用 esbuild 转译 TypeScript；仅允许该依赖执行安装脚本。
+allowBuilds:
+  esbuild: true
