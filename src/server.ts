@@ -1,5 +1,5 @@
-import { app } from "./app.js";
-import { checkDatabaseReady } from "./db.js";
+import { createApp } from "./app.js";
+import { checkDatabaseReady, openDatabase } from "./db.js";
 
 // NodeNext 下源码也写 .js：编译后 Node.js 会加载 dist/app.js。
 const port = Number(process.env.PORT ?? 3000);
@@ -17,11 +17,15 @@ try {
   process.exit(1);
 }
 
-const server = app.listen(port, host);
+// 整个进程共用一个连接。测试可以给 createApp 传入独立数据库。
+const database = openDatabase();
+const server = createApp(database).listen(port, host);
+server.once("close", () => database.close());
 server.on("listening", () => {
   console.log(`后端已启动：http://${host}:${port}/api/health`);
 });
 server.on("error", (error) => {
+  if (database.isOpen) database.close();
   console.error("后端启动失败：", error.message);
   process.exitCode = 1;
 });

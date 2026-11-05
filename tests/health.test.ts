@@ -1,7 +1,12 @@
 import assert from "node:assert/strict";
 import { once } from "node:events";
 import { after, before, test } from "node:test";
-import { app } from "../src/app.js";
+import { createApp } from "../src/app.js";
+import { applyMigrations, openDatabase } from "../src/db.js";
+
+const database = openDatabase(":memory:");
+applyMigrations(database);
+const app = createApp(database);
 
 // 使用随机空闲端口，避免测试占用平时开发使用的 3000 端口。
 const server = app.listen(0, "127.0.0.1");
@@ -16,6 +21,7 @@ after(async () => {
   await new Promise<void>((resolve, reject) => {
     server.close((error) => (error ? reject(error) : resolve()));
   });
+  database.close();
 });
 
 test("健康检查返回约定的成功结构", async () => {
