@@ -1,10 +1,20 @@
 import { app } from "./app.js";
+import { checkDatabaseReady } from "./db.js";
 
 // NodeNext 下源码也写 .js：编译后 Node.js 会加载 dist/app.js。
 const port = Number(process.env.PORT ?? 3000);
 const host = process.env.HOST ?? "127.0.0.1";
 if (!Number.isInteger(port) || port < 1 || port > 65535) {
   throw new Error("PORT 必须是 1～65535 之间的整数");
+}
+
+// 在监听端口之前检查数据库。检查完成后会关闭这次只读连接。
+try {
+  checkDatabaseReady();
+} catch (error) {
+  console.error("数据库未就绪，请检查 DATABASE_PATH 并运行 pnpm db:migrate。");
+  console.error(error instanceof Error ? error.message : error);
+  process.exit(1);
 }
 
 const server = app.listen(port, host);

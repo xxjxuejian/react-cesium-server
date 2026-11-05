@@ -14,7 +14,9 @@
     "start": "node --env-file-if-exists=.env dist/server.js",
     "typecheck": "tsc --noEmit -p tsconfig.json",
     "lint": "eslint .",
-    "test": "tsx --test tests/*.test.ts"
+    "test": "tsx --test tests/*.test.ts",
+    "db:migrate": "tsx --env-file-if-exists=.env src/scripts/migrate.ts",
+    "db:seed": "tsx --env-file-if-exists=.env src/scripts/seed.ts"
   },
   "dependencies": {
     "express": "^5.1.0"

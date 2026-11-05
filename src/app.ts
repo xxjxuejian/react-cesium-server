@@ -8,7 +8,7 @@ app.disable("x-powered-by");
 app.use(express.json({ limit: "1mb" }));
 
 app.get("/api/health", (_request, response) => {
-  // 当前仅检查 HTTP 服务存活，尚未连接数据库。
+  // 健康检查只报告 HTTP 进程是否能处理请求。数据库在启动时单独检查。
   response.json({
     code: 0,
     message: "服务运行正常",

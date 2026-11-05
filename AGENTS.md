@@ -9,4 +9,5 @@
 - 保持前端现有接口路径和 { code, message, data } 契约；变更契约时同步文档。
 - 不提交密码、token、.env、数据库文件、node_modules 或 dist。
 - 提交前运行 pnpm lint、pnpm typecheck、pnpm test、pnpm build。
-- 当前只实现 HTTP 骨架；下一步是 SQLite 连接、迁移和管理员初始化，详见 README.md。
+- 阶段 1 已完成数据库基础；下一步是登录、会话和权限，详见 README.md。
+- 每完成一个阶段，先运行本阶段检查，再单独提交一次代码。
