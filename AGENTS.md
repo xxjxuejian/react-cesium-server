@@ -9,5 +9,5 @@
 - 保持前端现有接口路径和 { code, message, data } 契约；变更契约时同步文档。
 - 不提交密码、token、.env、数据库文件、node_modules 或 dist。
 - 提交前运行 pnpm lint、pnpm typecheck、pnpm test、pnpm build。
-- 阶段 4 已完成避难场所管理；下一步是航线管理，详见 README.md。
+- 阶段 5 已完成航线管理；下一步是重点单位管理，详见 README.md。
 - 每完成一个阶段，先运行本阶段检查，再单独提交一次代码。
