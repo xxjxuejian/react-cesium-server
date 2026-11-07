@@ -2,7 +2,7 @@ import { createHash, randomBytes, randomUUID } from "node:crypto";
 import type { DatabaseSync } from "node:sqlite";
 import { Router, type RequestHandler } from "express";
 
-import { availableRoutes } from "./available-routes.js";
+import { getAvailableRoutes } from "./available-routes.js";
 import { verifyPassword } from "./password.js";
 
 /** 可安全返回给浏览器的用户资料。 */
@@ -139,11 +139,14 @@ export function createAuthRouter(database: DatabaseSync) {
       return;
     }
 
-    const { id, nickname, role } = account;
+    // 异步密码计算期间资料或角色可能改变，按编号读取最新记录，避免沿用旧权限。
+    const { id, username: currentUsername, nickname, role } = database.prepare(
+      "SELECT id, username, nickname, role FROM users WHERE id = ?",
+    ).get(account.id)!;
     response.json({
       code: 0,
       message: "登录成功",
-      data: { accessToken, user: { id, username, nickname, role }, routes: availableRoutes },
+      data: { accessToken, user: { id, username: currentUsername, nickname, role }, routes: getAvailableRoutes(String(role)) },
     });
   });
 
@@ -151,7 +154,7 @@ export function createAuthRouter(database: DatabaseSync) {
     response.json({
       code: 0,
       message: "获取登录用户成功",
-      data: { user: response.locals.user, routes: availableRoutes },
+      data: { user: response.locals.user, routes: getAvailableRoutes(String(response.locals.user.role)) },
     });
   });
 

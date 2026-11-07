@@ -55,7 +55,7 @@ test("真实会话支持登录、恢复、角色校验、过期、停用和撤�
     assert.equal(admin.user.role, "admin");
     assert.equal(admin.user.password_hash, undefined);
     assert.ok(admin.routes.some((route: { path: string }) => route.path === "home"));
-    assert.ok(admin.routes.every((route: { path: string }) => route.path !== "system-management"));
+    assert.ok(admin.routes.some((route: { path: string }) => route.path === "system-management"));
     assert.equal((await fetch(`${url}/test/admin`, auth(admin.accessToken))).status, 204);
 
     const stored = database.prepare("SELECT token_hash, expires_at, created_at FROM sessions").get();

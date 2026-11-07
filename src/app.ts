@@ -2,6 +2,7 @@ import type { DatabaseSync } from "node:sqlite";
 import express from "express";
 import type { ErrorRequestHandler } from "express";
 import { createAuthRouter } from "./auth.js";
+import { createUsersRouter } from "./modules/users/routes.js";
 
 // app 只定义请求处理规则，不占用端口，测试也可以直接使用它。
 export function createApp(database: DatabaseSync) {
@@ -20,6 +21,7 @@ export function createApp(database: DatabaseSync) {
   });
 
   app.use("/api/auth", createAuthRouter(database));
+  app.use("/api/system-management/users", createUsersRouter(database));
 
   // 放在所有业务接口之后，未匹配的地址统一返回 JSON，而不是 HTML。
   app.use((_request, response) => {
