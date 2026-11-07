@@ -67,8 +67,9 @@ export function createApp(database: DatabaseSync) {
       return;
     }
 
-    // 不记录请求体，避免未来密码等敏感字段进入日志。
-    console.error("请求处理失败：", error instanceof Error ? error.message : "未知错误");
+    // 底层错误消息也可能夹带提交值（例如数据库触发器消息），因此只记录固定信息。
+    // 不输出请求体、Authorization、密码、令牌、SQL 或原始错误堆栈。
+    console.error("请求处理失败：服务器内部错误，请检查数据库状态及服务配置。");
     response.status(500).json({
       code: 50000,
       message: "服务器内部错误",

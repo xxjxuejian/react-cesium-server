@@ -5,3 +5,12 @@ dist/
 !.env.example
 data/
 *.log
+
+# 数据库快照不提交；备份目录应位于静态发布目录之外。
+backups/
+*.db
+*.db-*
+*.sqlite
+*.sqlite-*
+*.sqlite3
+*.sqlite3-*

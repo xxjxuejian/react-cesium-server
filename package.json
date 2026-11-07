@@ -16,7 +16,10 @@
     "lint": "eslint .",
     "test": "tsx --test tests/*.test.ts",
     "db:migrate": "tsx --env-file-if-exists=.env src/scripts/migrate.ts",
-    "db:seed": "tsx --env-file-if-exists=.env src/scripts/seed.ts"
+    "db:seed": "tsx --env-file-if-exists=.env src/scripts/seed.ts",
+    "db:backup": "tsx --env-file-if-exists=.env src/scripts/backup.ts",
+    "db:restore": "tsx src/scripts/restore.ts",
+    "test:production": "pnpm build && tsx --test acceptance/production.test.ts"
   },
   "dependencies": {
     "express": "^5.1.0"

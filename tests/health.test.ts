@@ -1,6 +1,7 @@
 import assert from "node:assert/strict";
 import { once } from "node:events";
 import { after, before, test } from "node:test";
+import { initializeAdmin } from "../src/initialize-admin.js";
 import { createApp } from "../src/app.js";
 import { applyMigrations, openDatabase } from "../src/db.js";
 
@@ -63,4 +64,58 @@ test("超过请求体限制时返回 413", async () => {
   });
   assert.equal(response.status, 413);
   assert.equal((await response.json()).code, 41300);
+});
+
+test("真实数据库故障返回统一 500，响应和日志均不包含敏感错误内容", async (context) => {
+  const password = "error-log-test-only-password";
+  await initializeAdmin(database, "error-test-admin", password);
+  const login = await fetch(`${baseUrl}/api/auth/login`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ username: "error-test-admin", password }),
+  });
+  assert.equal(login.status, 200);
+  const token = (await login.json()).data.accessToken;
+  const secret = `${password}:${token}`;
+  // 模拟底层异常带入敏感数据；请求必须真正经过业务路由和全局错误处理。
+  database.exec(
+    `CREATE TRIGGER fail_airline_insert BEFORE INSERT ON airlines BEGIN SELECT RAISE(ABORT, '${secret}'); END`,
+  );
+  const logs: string[] = [];
+  context.mock.method(console, "error", (...args: unknown[]) =>
+    logs.push(args.join(" ")),
+  );
+  try {
+    const response = await fetch(`${baseUrl}/api/system-management/airlines`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${token}`,
+      },
+      body: JSON.stringify({
+        name: "日志验收航线",
+        speed: 10,
+        waypoints: [
+          { longitude: 120, latitude: 30, altitude: 0 },
+          { longitude: 121, latitude: 30, altitude: 0 },
+        ],
+      }),
+    });
+    assert.equal(response.status, 500);
+    assert.deepEqual(await response.json(), {
+      code: 50000,
+      message: "服务器内部错误",
+      data: null,
+    });
+    assert.equal(logs.length, 1);
+    assert.ok(
+      logs.every((line) => !line.includes(password) && !line.includes(token)),
+    );
+    assert.equal(
+      database.prepare("SELECT COUNT(*) AS total FROM airlines").get()?.total,
+      0,
+    );
+  } finally {
+    database.exec("DROP TRIGGER fail_airline_insert");
+  }
 });
