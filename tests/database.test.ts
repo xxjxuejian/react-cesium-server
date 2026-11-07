@@ -27,6 +27,7 @@ test("迁移和初始化可重复执行，重开数据库后账号仍可校验",
       "001_create_users_and_sessions.sql",
       "002_create_shelters.sql",
       "003_create_airlines.sql",
+      "004_create_key_units.sql",
     ]);
     assert.deepEqual(applyMigrations(database), []);
     await assert.rejects(
@@ -95,7 +96,7 @@ test("迁移中途遇到冲突时回滚建表和迁移记录", () => {
       ["sessions"],
     );
     database.exec("DROP TABLE sessions");
-    assert.equal(applyMigrations(database).length, 3);
+    assert.equal(applyMigrations(database).length, 4);
   } finally {
     database.close();
   }

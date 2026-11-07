@@ -96,7 +96,12 @@ test("场所五个接口均要求管理员，菜单只为管理员开放当前�
     );
     assert.deepEqual(
       system.children.map((route: { path: string }) => route.path),
-      ["user-management", "shelter-management", "airline-management"],
+      [
+        "user-management",
+        "shelter-management",
+        "airline-management",
+        "key-unit-management",
+      ],
     );
     assert.ok(
       !f.viewer.routes.some(

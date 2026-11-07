@@ -95,7 +95,12 @@ test("航线五个接口均检查身份与管理员角色，菜单只开放已�
     );
     assert.deepEqual(
       system.children.map((route: { path: string }) => route.path),
-      ["user-management", "shelter-management", "airline-management"],
+      [
+        "user-management",
+        "shelter-management",
+        "airline-management",
+        "key-unit-management",
+      ],
     );
     assert.ok(
       !f.viewer.routes.some(
