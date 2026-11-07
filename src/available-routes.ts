@@ -172,7 +172,7 @@ export const availableRoutes = [
   },
 ];
 
-// 普通用户只收到示例页；管理员额外收到已经实现的用户管理页。
+// 普通用户只收到示例页；管理员额外收到已经实现的管理页面。
 export function getAvailableRoutes(role: string) {
   if (role !== "admin") return availableRoutes;
   return [
@@ -198,6 +198,17 @@ export function getAvailableRoutes(role: string) {
             titleKey: "menu.systemManagement.userManagement",
             showInMenu: true,
             order: 1,
+          },
+        },
+        {
+          path: "shelter-management",
+          name: "ShelterManagement",
+          component: "system-management/shelter-management",
+          meta: {
+            title: "避难场所管理",
+            titleKey: "menu.systemManagement.shelterManagement",
+            showInMenu: true,
+            order: 2,
           },
         },
       ],
